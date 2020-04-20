@@ -31,6 +31,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmMaSuperForme));
             this.panEchiquier = new System.Windows.Forms.Panel();
             this.panInfo = new System.Windows.Forms.Panel();
+            this.btnReset = new System.Windows.Forms.Button();
             this.labInfoCases = new System.Windows.Forms.Label();
             this.picBoxCavalier = new System.Windows.Forms.PictureBox();
             this.panInfo.SuspendLayout();
@@ -48,11 +49,23 @@
             // panInfo
             // 
             this.panInfo.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panInfo.Controls.Add(this.btnReset);
             this.panInfo.Controls.Add(this.labInfoCases);
             this.panInfo.Location = new System.Drawing.Point(-4, 343);
             this.panInfo.Name = "panInfo";
             this.panInfo.Size = new System.Drawing.Size(352, 57);
             this.panInfo.TabIndex = 1;
+            // 
+            // btnReset
+            // 
+            this.btnReset.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnReset.Location = new System.Drawing.Point(262, 12);
+            this.btnReset.Name = "btnReset";
+            this.btnReset.Size = new System.Drawing.Size(73, 24);
+            this.btnReset.TabIndex = 1;
+            this.btnReset.Text = "Reset";
+            this.btnReset.UseVisualStyleBackColor = true;
+            this.btnReset.Click += new System.EventHandler(this.btnReset_Click);
             // 
             // labInfoCases
             // 
@@ -94,6 +107,7 @@
         private System.Windows.Forms.Panel panInfo;
         private System.Windows.Forms.Label labInfoCases;
         private System.Windows.Forms.PictureBox picBoxCavalier;
+        private System.Windows.Forms.Button btnReset;
     }
 }
 

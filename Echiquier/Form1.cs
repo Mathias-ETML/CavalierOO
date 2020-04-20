@@ -14,6 +14,9 @@ namespace Echiquier
 {
     public partial class FrmMaSuperForme : Form
     {
+        // variables globales
+        private List<PictureBox> g_ListePicBox = new List<PictureBox>();
+
         public FrmMaSuperForme()
         {
             InitializeComponent();
@@ -25,6 +28,7 @@ namespace Echiquier
 
         private void Echiquer()
         {
+            // variables
             g_intPosBufferXY = new int[2] { panEchiquier.Width / g_constbyteNbrCases * g_PosCavalierCaseX, 0 };
 
             bool[,] tab_boolFini2D = new bool[g_constbyteNbrCases, g_constbyteNbrCases];
@@ -77,6 +81,9 @@ namespace Echiquier
 
                     // ajoute au panel les picture box
                     panEchiquier.Controls.Add(picBox);
+
+                    // ajoute la picture box au bouton
+                    g_ListePicBox.Add(picBox);
                 }
             }
 
@@ -95,6 +102,9 @@ namespace Echiquier
 
         private void DefPicBoxCavalier()
         {
+            // permet d'invoquer une nouvelle picture box
+            picBoxCavalier = new PictureBox();
+
             // set la hauteur et largeur de la picture box
             picBoxCavalier.Size = new Size(panEchiquier.Width / g_constbyteNbrCases, panEchiquier.Height / g_constbyteNbrCases);
 
@@ -123,24 +133,25 @@ namespace Echiquier
             bool[] tab_boolTabJoueurFlatten = g_boolTabJoueur.Cast<bool>().ToArray();
 
             // split le nom du picBox dans un tbl de string
-            string[] tab_strStringNamePicBox = ((Control)sender).Name.Split(' ');
+            Control CtrlSender = (Control)sender;
+            string[] tab_strStringNamePicBox = CtrlSender.Name.Split(' ');
 
             // permet de changer le nom du picBox en position XY dans le cavalier
             byte[] tab_bytePosXYViaNom = new byte[] { (byte)((byte)Convert.ToChar(tab_strStringNamePicBox[0]) - 65), Convert.ToByte(tab_strStringNamePicBox[1])};
 
             // check si le joueur a cliqué sur une position valide
-            if (CheckPos(((Control)sender).Location.X, ((Control)sender).Location.Y))
+            if (CheckPos(CtrlSender.Location.X, CtrlSender.Location.Y))
             {
                 // set dans la position XY du joueur que il est allé sur cette case
                 g_boolTabJoueur[tab_bytePosXYViaNom[0], tab_bytePosXYViaNom[1]] = true;
 
                 // set la location de la picture box
-                picBoxCavalier.Location = ((Control)sender).Location;
+                picBoxCavalier.Location = CtrlSender.Location;
 
                 // check si le cavalier est déjà passé par la case
-                if (((Control)sender).BackColor != Color.Green)
+                if (CtrlSender.BackColor != Color.Green)
                 {
-                    ((Control)sender).BackColor = Color.Green;
+                    CtrlSender.BackColor = Color.Green;
                 }
                 // si non alors remet la couleur de base
                 else
@@ -149,7 +160,7 @@ namespace Echiquier
                     g_boolTabJoueur[tab_bytePosXYViaNom[0], tab_bytePosXYViaNom[1]] = false;
 
                     // check quel devrait être la couleur a remettre
-                    ((Control)sender).BackColor = (tab_bytePosXYViaNom[0] + tab_bytePosXYViaNom[1]) % 2 == 0 ? Color.White : Color.Orange;
+                    CtrlSender.BackColor = (tab_bytePosXYViaNom[0] + tab_bytePosXYViaNom[1]) % 2 == 0 ? Color.White : Color.Orange;
                 }
 
                 // check si le joueur a fini le cavalier en comparant les tableaux flattent
@@ -239,6 +250,28 @@ namespace Echiquier
             {
                 return false;
             }
+        }
+
+        private void btnReset_Click(object sender, EventArgs e)
+        {
+            // fait disparaitre le cavalier en le disposant grace a foreach
+            foreach (PictureBox item in g_ListePicBox)
+            {
+                item.Dispose();
+            }
+
+            // dispose cavalier
+            picBoxCavalier.Dispose();
+
+            // reset des variables
+            g_intPosBufferXY = Array.Empty<int>();
+            g_boolTabJoueur = new bool[g_constbyteNbrCases, g_constbyteNbrCases];
+            g_boolCheckCavalierFini = Array.Empty<bool>();
+            g_ListePicBox.Clear();
+
+            // recall les fonctions, donc permet de refaire aparaitre le cavalier et l'echiquier
+            DefPicBoxCavalier();
+            Echiquer();
         }
     }
 }
