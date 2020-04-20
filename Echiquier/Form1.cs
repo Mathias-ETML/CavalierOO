@@ -112,6 +112,7 @@ namespace Echiquier
 
         private void PositionCavalier(object sender, EventArgs e)
         {
+            // flatten le tableau
             bool[] tab_boolTabJoueurFlatten = g_boolTabJoueur.Cast<bool>().ToArray();
 
             // split le nom du picBox dans un tbl de string
@@ -144,6 +145,7 @@ namespace Echiquier
                     ((Control)sender).BackColor = (tab_bytePosXYViaNom[0] + tab_bytePosXYViaNom[1]) % 2 == 0 ? Color.White : Color.Orange;
                 }
 
+                // check si le joueur a fini le cavalier en comparant les tableaux flattent
                 if (tab_boolTabJoueurFlatten.SequenceEqual(g_boolCheckCavalierFini))
                 {
                     MessageBox.Show("Bravo, vous avez gagné");
@@ -151,6 +153,7 @@ namespace Echiquier
                     Dispose();
                 }
             }
+            // si non alors joueur a cliquer sur mauvaise case
             else
             {
                 MessageBox.Show("Le cavalier ne peut pas se déplacer sur cette case");
