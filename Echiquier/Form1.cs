@@ -144,7 +144,7 @@ namespace Echiquier
                     ((Control)sender).BackColor = (tab_bytePosXYViaNom[0] + tab_bytePosXYViaNom[1]) % 2 == 0 ? Color.White : Color.Orange;
                 }
 
-                if (!tab_boolTabJoueurFlatten.SequenceEqual(g_boolCheckCavalierFini))
+                if (tab_boolTabJoueurFlatten.SequenceEqual(g_boolCheckCavalierFini))
                 {
                     MessageBox.Show("Bravo, vous avez gagné");
 
