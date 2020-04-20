@@ -78,6 +78,9 @@ namespace Echiquier
 
             // flattent le tableau 2d en 1d
             g_boolCheckCavalierFini = tab_boolFini2D.Cast<bool>().ToArray();
+
+            // empty le tableau
+            tab_boolFini2D = new bool[,] { };
         }
 
         private void InfoCase(object sender, EventArgs e)
@@ -165,7 +168,10 @@ namespace Echiquier
             int TailleCase = panEchiquier.Width / g_constbyteNbrCases;
             int[] tabPosXY = new int[] { intX, intY };
 
-            // ici j'inverse le +/- pour check l'ancienne position du joueur
+            // ok ici le but est de voir par rapport a la case cliqué si le cavalier se trouve dessus
+            // les commentaires montre ou le joueur doit cliquer pour que la condition soit true
+            // la condition check par rapport a la case cliqué
+            // mon point d'origine est en haut a gauche, donc le 0,0
             // check a chaque fois si le cavalier est dans une position légal
             if (intX - TailleCase * 1 == g_intPosBufferXY[0] && intY + TailleCase * 2 == g_intPosBufferXY[1]) //  + 1x // + 2y
             {
