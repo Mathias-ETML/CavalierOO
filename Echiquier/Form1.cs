@@ -58,11 +58,15 @@ namespace Echiquier
                     // défini la couleur de la boite
                     if (x != g_PosCavalierCaseX || y != 0)
                     {
+                        // check si il faut mettre du blanc ou du orange
                         picBox.BackColor = (x + y) % 2 == 0 ? Color.White : Color.Orange;
                     }
                     else
                     {
                         picBox.BackColor = Color.Green;
+
+                        // permet de mettre que la case actuelle est true
+                        g_boolTabJoueur[x, y] = true;
                     }
 
                     // défini ce qui se passe quand on click dessus
