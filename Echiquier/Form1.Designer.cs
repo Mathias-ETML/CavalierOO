@@ -30,21 +30,54 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmMaSuperForme));
             this.panEchiquier = new System.Windows.Forms.Panel();
+            this.btnValiderNbrCases = new System.Windows.Forms.Button();
+            this.labNbrCases = new System.Windows.Forms.Label();
+            this.txtBoxInputNbrCases = new System.Windows.Forms.TextBox();
             this.panInfo = new System.Windows.Forms.Panel();
             this.btnReset = new System.Windows.Forms.Button();
             this.labInfoCases = new System.Windows.Forms.Label();
             this.picBoxCavalier = new System.Windows.Forms.PictureBox();
+            this.panEchiquier.SuspendLayout();
             this.panInfo.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picBoxCavalier)).BeginInit();
             this.SuspendLayout();
             // 
             // panEchiquier
             // 
+            this.panEchiquier.Controls.Add(this.btnValiderNbrCases);
+            this.panEchiquier.Controls.Add(this.labNbrCases);
+            this.panEchiquier.Controls.Add(this.txtBoxInputNbrCases);
             this.panEchiquier.Cursor = System.Windows.Forms.Cursors.PanNW;
             this.panEchiquier.Location = new System.Drawing.Point(12, 12);
             this.panEchiquier.Name = "panEchiquier";
             this.panEchiquier.Size = new System.Drawing.Size(320, 320);
             this.panEchiquier.TabIndex = 0;
+            // 
+            // btnValiderNbrCases
+            // 
+            this.btnValiderNbrCases.Location = new System.Drawing.Point(118, 179);
+            this.btnValiderNbrCases.Name = "btnValiderNbrCases";
+            this.btnValiderNbrCases.Size = new System.Drawing.Size(76, 20);
+            this.btnValiderNbrCases.TabIndex = 2;
+            this.btnValiderNbrCases.Text = "Ok";
+            this.btnValiderNbrCases.UseVisualStyleBackColor = true;
+            this.btnValiderNbrCases.Click += new System.EventHandler(this.btnValiderNbrCases_Click);
+            // 
+            // labNbrCases
+            // 
+            this.labNbrCases.AutoSize = true;
+            this.labNbrCases.Location = new System.Drawing.Point(94, 139);
+            this.labNbrCases.Name = "labNbrCases";
+            this.labNbrCases.Size = new System.Drawing.Size(132, 13);
+            this.labNbrCases.TabIndex = 1;
+            this.labNbrCases.Text = "Nombre de cases par côté";
+            // 
+            // txtBoxInputNbrCases
+            // 
+            this.txtBoxInputNbrCases.Location = new System.Drawing.Point(118, 155);
+            this.txtBoxInputNbrCases.Name = "txtBoxInputNbrCases";
+            this.txtBoxInputNbrCases.Size = new System.Drawing.Size(77, 20);
+            this.txtBoxInputNbrCases.TabIndex = 0;
             // 
             // panInfo
             // 
@@ -55,6 +88,7 @@
             this.panInfo.Name = "panInfo";
             this.panInfo.Size = new System.Drawing.Size(352, 57);
             this.panInfo.TabIndex = 1;
+            this.panInfo.Visible = false;
             // 
             // btnReset
             // 
@@ -65,6 +99,7 @@
             this.btnReset.TabIndex = 1;
             this.btnReset.Text = "Reset";
             this.btnReset.UseVisualStyleBackColor = true;
+            this.btnReset.Visible = false;
             this.btnReset.Click += new System.EventHandler(this.btnReset_Click);
             // 
             // labInfoCases
@@ -76,6 +111,7 @@
             this.labInfoCases.Size = new System.Drawing.Size(75, 20);
             this.labInfoCases.TabIndex = 0;
             this.labInfoCases.Text = "Case : ?";
+            this.labInfoCases.Visible = false;
             // 
             // picBoxCavalier
             // 
@@ -94,6 +130,8 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FrmMaSuperForme";
             this.Text = "Echiquer";
+            this.panEchiquier.ResumeLayout(false);
+            this.panEchiquier.PerformLayout();
             this.panInfo.ResumeLayout(false);
             this.panInfo.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picBoxCavalier)).EndInit();
@@ -108,6 +146,9 @@
         private System.Windows.Forms.Label labInfoCases;
         private System.Windows.Forms.PictureBox picBoxCavalier;
         private System.Windows.Forms.Button btnReset;
+        private System.Windows.Forms.Label labNbrCases;
+        private System.Windows.Forms.TextBox txtBoxInputNbrCases;
+        private System.Windows.Forms.Button btnValiderNbrCases;
     }
 }
 

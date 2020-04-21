@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using static Echiquier.Variables;
 
@@ -20,34 +17,30 @@ namespace Echiquier
         public FrmMaSuperForme()
         {
             InitializeComponent();
-
-            DefPicBoxCavalier();
-
-            Echiquer();
         }
 
         private void Echiquer()
         {
-            // variables
-            g_intPosBufferXY = new int[2] { panEchiquier.Width / g_constbyteNbrCases * g_PosCavalierCaseX, 0 };
+            // re initialise les variables
+            g_intPosBufferXY = new int[2] { panEchiquier.Width / g_byteNbrCases * g_bytePosCavalierCaseX, 0 };
+            g_boolCheckCavalierFini = new bool[g_byteNbrCases * g_byteNbrCases];
+            byte byteBuffer = 0;
 
-            bool[,] tab_boolFini2D = new bool[g_constbyteNbrCases, g_constbyteNbrCases];
-
-            for (int y = 0; y < g_constbyteNbrCases; y++)
+            for (int y = 0; y < g_byteNbrCases; y++)
             {
-                for (int x = 0; x < g_constbyteNbrCases; x++)
+                for (int x = 0; x < g_byteNbrCases; x++)
                 {
                     // initialise le tablea du joueur avec des false, donc il n'est pas passé par la
                     g_boolTabJoueur[x, y] = false;
 
                     // initalise le tableau qui va être flattent de true
-                    tab_boolFini2D[x, y] = true;
+                    g_boolCheckCavalierFini[byteBuffer + x] = true;
 
                     // crée la picture box
                     PictureBox picBox = new PictureBox();
 
                     // définie la taille de la picture box
-                    picBox.Size = new Size(panEchiquier.Width / g_constbyteNbrCases, panEchiquier.Height / g_constbyteNbrCases);
+                    picBox.Size = new Size(panEchiquier.Width / g_byteNbrCases, panEchiquier.Height / g_byteNbrCases);
 
                     // défini le nom
                     // prends la position de X, puis ajoute 65 pour avoir le caratère ASCII
@@ -60,7 +53,7 @@ namespace Echiquier
                     picBox.Location = new Point(x * picBox.Width, y * picBox.Height);
 
                     // défini la couleur de la boite
-                    if (x != g_PosCavalierCaseX || y != 0)
+                    if (x != g_bytePosCavalierCaseX || y != 0)
                     {
                         // check si il faut mettre du blanc ou du orange
                         picBox.BackColor = (x + y) % 2 == 0 ? Color.White : Color.Orange;
@@ -85,13 +78,13 @@ namespace Echiquier
                     // ajoute la picture box au bouton
                     g_ListePicBox.Add(picBox);
                 }
+
+                // permet de buffer la position dans le tableau
+                byteBuffer += g_byteNbrCases;
             }
 
-            // flattent le tableau 2d en 1d
-            g_boolCheckCavalierFini = tab_boolFini2D.Cast<bool>().ToArray();
-
-            // empty le tableau
-            tab_boolFini2D = new bool[,] { };
+            // set la dernière case du tableau en true
+            g_boolCheckCavalierFini[byteBuffer - 1] = true;
         }
 
         private void InfoCase(object sender, EventArgs e)
@@ -106,7 +99,7 @@ namespace Echiquier
             picBoxCavalier = new PictureBox();
 
             // set la hauteur et largeur de la picture box
-            picBoxCavalier.Size = new Size(panEchiquier.Width / g_constbyteNbrCases, panEchiquier.Height / g_constbyteNbrCases);
+            picBoxCavalier.Size = new Size(panEchiquier.Width / g_byteNbrCases, panEchiquier.Height / g_byteNbrCases);
 
             // met l'image par raport a la taille de la picture box
             picBoxCavalier.SizeMode = PictureBoxSizeMode.StretchImage;
@@ -121,7 +114,7 @@ namespace Echiquier
             picBoxCavalier.BorderStyle = BorderStyle.FixedSingle;
 
             // def de la position d'origine
-            picBoxCavalier.Location = new Point(g_PosCavalierCaseX * panEchiquier.Width / g_constbyteNbrCases, 0);
+            picBoxCavalier.Location = new Point(g_bytePosCavalierCaseX * panEchiquier.Width / g_byteNbrCases, 0);
 
             // ajoute la picture box au cavalier
             panEchiquier.Controls.Add(picBoxCavalier);
@@ -130,7 +123,7 @@ namespace Echiquier
         private void PositionCavalier(object sender, EventArgs e)
         {
             // flatten le tableau
-            bool[] tab_boolTabJoueurFlatten = g_boolTabJoueur.Cast<bool>().ToArray();
+            bool[] tab_boolTabJoueurFlatten; // = g_boolTabJoueur.Cast<bool>().ToArray();
 
             // split le nom du picBox dans un tbl de string
             Control CtrlSender = (Control)sender;
@@ -163,6 +156,9 @@ namespace Echiquier
                     CtrlSender.BackColor = (tab_bytePosXYViaNom[0] + tab_bytePosXYViaNom[1]) % 2 == 0 ? Color.White : Color.Orange;
                 }
 
+                // flatten le tableau du joueur pour que il puisse être comparé
+                tab_boolTabJoueurFlatten = g_boolTabJoueur.Cast<bool>().ToArray();
+
                 // check si le joueur a fini le cavalier en comparant les tableaux flattent
                 if (tab_boolTabJoueurFlatten.SequenceEqual(g_boolCheckCavalierFini))
                 {
@@ -180,76 +176,61 @@ namespace Echiquier
 
         private bool CheckPos(int intX, int intY)
         {
-            int TailleCase = panEchiquier.Width / g_constbyteNbrCases;
+            // variables
+            int TailleCase = panEchiquier.Width / g_byteNbrCases;
             int[] tabPosXY = new int[] { intX, intY };
 
-            // ok ici le but est de voir par rapport a la case cliqué si le cavalier se trouve dessus
+            // ici le but est de voir par rapport a la case cliqué si le cavalier se trouve dessus
             // les commentaires montre ou le joueur doit cliquer pour que la condition soit true
             // la condition check par rapport a la case cliqué
             // mon point d'origine est en haut a gauche, donc le 0,0
             // check a chaque fois si le cavalier est dans une position légal
             if (intX - TailleCase * 1 == g_intPosBufferXY[0] && intY + TailleCase * 2 == g_intPosBufferXY[1]) //  + 1x // + 2y
             {
-                g_intPosBufferXY[0] = intX;
-                g_intPosBufferXY[1] = intY;
-
-                return true;
+                return ChangementBuffer(intX, intY);
             }
             else if (intX - TailleCase * 2 == g_intPosBufferXY[0] && intY + TailleCase * 1 == g_intPosBufferXY[1]) //  + 2x // + 1y
             {
-                g_intPosBufferXY[0] = intX;
-                g_intPosBufferXY[1] = intY;
-
-                return true;
+                return ChangementBuffer(intX, intY);
             }
             else if (intX - TailleCase * 2 == g_intPosBufferXY[0] && intY - TailleCase * 1 == g_intPosBufferXY[1]) // + 2x // - 1y
             {
-                g_intPosBufferXY[0] = intX;
-                g_intPosBufferXY[1] = intY;
-
-                return true;
+                return ChangementBuffer(intX, intY);
             }
             else if (intX - TailleCase * 1 == g_intPosBufferXY[0] && intY - TailleCase * 2 == g_intPosBufferXY[1]) // + 1x // - 2y
             {
-                g_intPosBufferXY[0] = intX;
-                g_intPosBufferXY[1] = intY;
-
-                return true;
+                return ChangementBuffer(intX, intY);
             }
             // fin droite
             else if (intX + TailleCase * 1 == g_intPosBufferXY[0] && intY - TailleCase * 2 == g_intPosBufferXY[1]) // - 1x // - 2y
             {
-                g_intPosBufferXY[0] = intX;
-                g_intPosBufferXY[1] = intY;
-
-                return true;
+                return ChangementBuffer(intX, intY);
             }
             else if (intX + TailleCase * 2 == g_intPosBufferXY[0] && intY - TailleCase * 1 == g_intPosBufferXY[1]) // - 2x // - 1y
             {
-                g_intPosBufferXY[0] = intX;
-                g_intPosBufferXY[1] = intY;
-
-                return true;
+                return ChangementBuffer(intX, intY);
             }
             else if (intX + TailleCase * 2 == g_intPosBufferXY[0] && intY + TailleCase * 1 == g_intPosBufferXY[1]) // -2x + 1y
             {
-                g_intPosBufferXY[0] = intX;
-                g_intPosBufferXY[1] = intY;
-
-                return true;
+                return ChangementBuffer(intX, intY);
             }
             else if (intX + TailleCase * 1 == g_intPosBufferXY[0] && intY + TailleCase * 2 == g_intPosBufferXY[1]) // - 1x + 2y
             {
-                g_intPosBufferXY[0] = intX;
-                g_intPosBufferXY[1] = intY;
-
-                return true;
+                return ChangementBuffer(intX, intY);
             }
             // si non alors joueur clique sur mauvaise case
             else
             {
                 return false;
             }
+        }
+
+        private bool ChangementBuffer(int intX, int intY)
+        {
+            g_intPosBufferXY[0] = intX;
+            g_intPosBufferXY[1] = intY;
+
+            return true;
         }
 
         private void btnReset_Click(object sender, EventArgs e)
@@ -265,13 +246,52 @@ namespace Echiquier
 
             // reset des variables
             g_intPosBufferXY = Array.Empty<int>();
-            g_boolTabJoueur = new bool[g_constbyteNbrCases, g_constbyteNbrCases];
+            g_boolTabJoueur = new bool[g_byteNbrCases, g_byteNbrCases];
             g_boolCheckCavalierFini = Array.Empty<bool>();
             g_ListePicBox.Clear();
 
             // recall les fonctions, donc permet de refaire aparaitre le cavalier et l'echiquier
             DefPicBoxCavalier();
             Echiquer();
+        }
+
+        private void Initialisation()
+        {
+            // re initalise le tableau du joueur
+            g_boolTabJoueur = new bool[g_byteNbrCases, g_byteNbrCases];
+            g_bytePosCavalierCaseX = (byte)(g_byteNbrCases - 3 - 1);
+
+            // active la visibilité des informations du cavalier
+            labInfoCases.Visible = true;
+            btnReset.Visible = true;
+            panInfo.Visible = true;
+
+            // desactive la visibilité de demande input nbr cases
+            labNbrCases.Visible = false;
+            txtBoxInputNbrCases.Visible = false;
+            btnValiderNbrCases.Visible = false;
+
+            // initialise l'echiquier
+            DefPicBoxCavalier();
+            Echiquer();
+        }
+
+        private void btnValiderNbrCases_Click(object sender, EventArgs e)
+        {
+            // converti le nombre input dans la variable des nbr cases
+            g_byteNbrCases = Convert.ToByte(txtBoxInputNbrCases.Text);
+           
+            // check si nombre entré est entre 4 et 16
+            if (g_byteNbrCases >= 4 && g_byteNbrCases <= 16)
+	        {
+                // initalisation echiquier
+                Initialisation();
+	        }
+            // si non montre message d'erreur
+            else
+	        {
+                MessageBox.Show("Entrez un nombre comprit entre 4 et 16");
+	        }
         }
     }
 }
