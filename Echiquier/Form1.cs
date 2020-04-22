@@ -19,16 +19,9 @@ namespace Echiquier
             InitializeComponent();
         }
 
-        public static byte g_byteNbrCases = 8;
-        public static byte g_bytePosCavalierCaseX = (byte)(g_byteNbrCases - 3 - 1);
-        public static int[] g_intPosBufferXY = { 0, 0 };
-        public static bool[,] g_boolTabJoueur = new bool[g_byteNbrCases, g_byteNbrCases];
-        public static bool[] g_boolCheckCavalierFini = new bool[g_byteNbrCases * g_byteNbrCases];
-
         private void Echiquer()
         {
             // re initialise les variables
-            g_intPosBufferXY = new int[2] { panEchiquier.Width / g_byteNbrCases * g_bytePosCavalierCaseX, 0 };
             g_boolCheckCavalierFini = new bool[g_byteNbrCases * g_byteNbrCases];
             byte byteBuffer = 0;
 
@@ -249,7 +242,6 @@ namespace Echiquier
         {
             // re initalise le tableau du joueur
             g_boolTabJoueur = new bool[g_byteNbrCases, g_byteNbrCases];
-            g_bytePosCavalierCaseX = (byte)(g_byteNbrCases - 3 - 1);
 
             // active la visibilité des informations du cavalier
             labInfoCases.Visible = true;
