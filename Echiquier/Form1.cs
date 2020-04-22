@@ -22,7 +22,7 @@ namespace Echiquier
         private void Echiquer()
         {
             // re initialise les variables
-            g_boolCheckCavalierFini = new bool[g_byteNbrCases * g_byteNbrCases];
+            g_boolTabCheckCavalierFini = new bool[g_byteNbrCases * g_byteNbrCases];
             byte byteBuffer = 0;
 
             for (int y = 0; y < g_byteNbrCases; y++)
@@ -33,7 +33,7 @@ namespace Echiquier
                     g_boolTabJoueur[x, y] = false;
 
                     // initalise le tableau qui va être flattent de true
-                    g_boolCheckCavalierFini[byteBuffer + x] = true;
+                    g_boolTabCheckCavalierFini[byteBuffer + x] = true;
 
                     // crée la picture box
                     PictureBox picBox = new PictureBox();
@@ -69,7 +69,7 @@ namespace Echiquier
             }
 
             // set la dernière case du tableau en true
-            g_boolCheckCavalierFini[byteBuffer - 1] = true;
+            g_boolTabCheckCavalierFini[byteBuffer - 1] = true;
         }
 
         private void InfoCase(object sender, EventArgs e)
@@ -139,7 +139,7 @@ namespace Echiquier
                 tab_boolTabJoueurFlatten = g_boolTabJoueur.Cast<bool>().ToArray();
 
                 // check si le joueur a fini le cavalier en comparant les tableaux flattent
-                if (tab_boolTabJoueurFlatten.SequenceEqual(g_boolCheckCavalierFini))
+                if (tab_boolTabJoueurFlatten.SequenceEqual(g_boolTabCheckCavalierFini))
                 {
                     MessageBox.Show("Bravo, vous avez gagné");
 
@@ -164,36 +164,36 @@ namespace Echiquier
             // la condition check par rapport a la case cliqué
             // mon point d'origine est en haut a gauche, donc le 0,0
             // check a chaque fois si le cavalier est dans une position légal
-            if (intX - TailleCase * 1 == g_intPosBufferXY[0] && intY + TailleCase * 2 == g_intPosBufferXY[1]) //  + 1x // + 2y
+            if (intX - TailleCase * 1 == g_intTabPosBufferXY[0] && intY + TailleCase * 2 == g_intTabPosBufferXY[1]) //  + 1x // + 2y
             {
                 return ChangementBuffer(intX, intY);
             }
-            else if (intX - TailleCase * 2 == g_intPosBufferXY[0] && intY + TailleCase * 1 == g_intPosBufferXY[1]) //  + 2x // + 1y
+            else if (intX - TailleCase * 2 == g_intTabPosBufferXY[0] && intY + TailleCase * 1 == g_intTabPosBufferXY[1]) //  + 2x // + 1y
             {
                 return ChangementBuffer(intX, intY);
             }
-            else if (intX - TailleCase * 2 == g_intPosBufferXY[0] && intY - TailleCase * 1 == g_intPosBufferXY[1]) // + 2x // - 1y
+            else if (intX - TailleCase * 2 == g_intTabPosBufferXY[0] && intY - TailleCase * 1 == g_intTabPosBufferXY[1]) // + 2x // - 1y
             {
                 return ChangementBuffer(intX, intY);
             }
-            else if (intX - TailleCase * 1 == g_intPosBufferXY[0] && intY - TailleCase * 2 == g_intPosBufferXY[1]) // + 1x // - 2y
+            else if (intX - TailleCase * 1 == g_intTabPosBufferXY[0] && intY - TailleCase * 2 == g_intTabPosBufferXY[1]) // + 1x // - 2y
             {
                 return ChangementBuffer(intX, intY);
             }
             // fin droite
-            else if (intX + TailleCase * 1 == g_intPosBufferXY[0] && intY - TailleCase * 2 == g_intPosBufferXY[1]) // - 1x // - 2y
+            else if (intX + TailleCase * 1 == g_intTabPosBufferXY[0] && intY - TailleCase * 2 == g_intTabPosBufferXY[1]) // - 1x // - 2y
             {
                 return ChangementBuffer(intX, intY);
             }
-            else if (intX + TailleCase * 2 == g_intPosBufferXY[0] && intY - TailleCase * 1 == g_intPosBufferXY[1]) // - 2x // - 1y
+            else if (intX + TailleCase * 2 == g_intTabPosBufferXY[0] && intY - TailleCase * 1 == g_intTabPosBufferXY[1]) // - 2x // - 1y
             {
                 return ChangementBuffer(intX, intY);
             }
-            else if (intX + TailleCase * 2 == g_intPosBufferXY[0] && intY + TailleCase * 1 == g_intPosBufferXY[1]) // -2x + 1y
+            else if (intX + TailleCase * 2 == g_intTabPosBufferXY[0] && intY + TailleCase * 1 == g_intTabPosBufferXY[1]) // -2x + 1y
             {
                 return ChangementBuffer(intX, intY);
             }
-            else if (intX + TailleCase * 1 == g_intPosBufferXY[0] && intY + TailleCase * 2 == g_intPosBufferXY[1]) // - 1x + 2y
+            else if (intX + TailleCase * 1 == g_intTabPosBufferXY[0] && intY + TailleCase * 2 == g_intTabPosBufferXY[1]) // - 1x + 2y
             {
                 return ChangementBuffer(intX, intY);
             }
@@ -207,8 +207,8 @@ namespace Echiquier
         private bool ChangementBuffer(int intX, int intY)
         {
             // permet de compacter les lignes de codes qui revenait dans la méthode CheckPos
-            g_intPosBufferXY[0] = intX;
-            g_intPosBufferXY[1] = intY;
+            g_intTabPosBufferXY[0] = intX;
+            g_intTabPosBufferXY[1] = intY;
 
             return true;
         }
@@ -225,9 +225,9 @@ namespace Echiquier
             picBoxCavalier.Dispose();
 
             // reset des variables
-            g_intPosBufferXY = Array.Empty<int>();
+            g_intTabPosBufferXY = Array.Empty<int>();
             g_boolTabJoueur = new bool[g_byteNbrCases, g_byteNbrCases];
-            g_boolCheckCavalierFini = Array.Empty<bool>();
+            g_boolTabCheckCavalierFini = Array.Empty<bool>();
             g_ListePicBox.Clear();
 
             // recall les fonctions, donc permet de refaire aparaitre le cavalier et l'echiquier
@@ -285,8 +285,8 @@ namespace Echiquier
             Control CtrlSender = ((Control)sender);
 
             // set dans le buffer la position du click
-            g_intPosBufferXY[0] = CtrlSender.Location.X;
-            g_intPosBufferXY[1] = CtrlSender.Location.Y;
+            g_intTabPosBufferXY[0] = CtrlSender.Location.X;
+            g_intTabPosBufferXY[1] = CtrlSender.Location.Y;
 
             // def de la position d'origine
             picBoxCavalier.Location = new Point(CtrlSender.Location.X, CtrlSender.Location.Y);
