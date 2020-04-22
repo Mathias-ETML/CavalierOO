@@ -14,6 +14,11 @@ namespace Echiquier
         // variables globales
         private List<PictureBox> g_ListePicBox = new List<PictureBox>();
 
+        public static byte g_byteNbrCases = 8;
+        public static int[] g_intTabPosBufferXY = { 0, 0 };
+        public static bool[,] g_boolTabJoueur = new bool[g_byteNbrCases, g_byteNbrCases];
+        public static bool[] g_boolTabCheckCavalierFini = new bool[g_byteNbrCases * g_byteNbrCases];
+
         public FrmMaSuperForme()
         {
             InitializeComponent();
@@ -21,9 +26,10 @@ namespace Echiquier
 
         private void Echiquer()
         {
-            // re initialise les variables
+            // variables + (re)init les tableaux
+            short shortBuffer = 0;
             g_boolTabCheckCavalierFini = new bool[g_byteNbrCases * g_byteNbrCases];
-            byte byteBuffer = 0;
+            g_boolTabJoueur = new bool[g_byteNbrCases, g_byteNbrCases];
 
             for (int y = 0; y < g_byteNbrCases; y++)
             {
@@ -33,7 +39,7 @@ namespace Echiquier
                     g_boolTabJoueur[x, y] = false;
 
                     // initalise le tableau qui va être flattent de true
-                    g_boolTabCheckCavalierFini[byteBuffer + x] = true;
+                    g_boolTabCheckCavalierFini[shortBuffer + x] = true;
 
                     // crée la picture box
                     PictureBox picBox = new PictureBox();
@@ -65,11 +71,11 @@ namespace Echiquier
                 }
 
                 // permet de buffer la position dans le tableau
-                byteBuffer += g_byteNbrCases;
+                shortBuffer += g_byteNbrCases;
             }
 
             // set la dernière case du tableau en true
-            g_boolTabCheckCavalierFini[byteBuffer - 1] = true;
+            g_boolTabCheckCavalierFini[shortBuffer - 1] = true;
         }
 
         private void InfoCase(object sender, EventArgs e)
@@ -225,9 +231,9 @@ namespace Echiquier
             picBoxCavalier.Dispose();
 
             // reset des variables
-            g_intTabPosBufferXY = Array.Empty<int>();
+            g_intTabPosBufferXY = new int[g_byteNbrCases * g_byteNbrCases];
             g_boolTabJoueur = new bool[g_byteNbrCases, g_byteNbrCases];
-            g_boolTabCheckCavalierFini = Array.Empty<bool>();
+            g_boolTabCheckCavalierFini = new bool[g_byteNbrCases * g_byteNbrCases];
             g_ListePicBox.Clear();
 
             // recall les fonctions, donc permet de refaire aparaitre le cavalier et l'echiquier
@@ -239,10 +245,7 @@ namespace Echiquier
         }
 
         private void Initialisation()
-        {
-            // re initalise le tableau du joueur
-            g_boolTabJoueur = new bool[g_byteNbrCases, g_byteNbrCases];
-
+        {           
             // active la visibilité des informations du cavalier
             labInfoCases.Visible = true;
             btnReset.Visible = true;
@@ -281,7 +284,7 @@ namespace Echiquier
 
         private void PosCavalierViaClick(object sender, EventArgs e)
         {
-            // définitions
+            // définition
             Control CtrlSender = ((Control)sender);
 
             // set dans le buffer la position du click
