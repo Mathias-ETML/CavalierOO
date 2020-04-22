@@ -19,6 +19,12 @@ namespace Echiquier
             InitializeComponent();
         }
 
+        public static byte g_byteNbrCases = 8;
+        public static byte g_bytePosCavalierCaseX = (byte)(g_byteNbrCases - 3 - 1);
+        public static int[] g_intPosBufferXY = { 0, 0 };
+        public static bool[,] g_boolTabJoueur = new bool[g_byteNbrCases, g_byteNbrCases];
+        public static bool[] g_boolCheckCavalierFini = new bool[g_byteNbrCases * g_byteNbrCases];
+
         private void Echiquer()
         {
             // re initialise les variables
@@ -52,25 +58,11 @@ namespace Echiquier
                     // définie la position de la picture box
                     picBox.Location = new Point(x * picBox.Width, y * picBox.Height);
 
-                    // défini la couleur de la boite
-                    if (x != g_bytePosCavalierCaseX || y != 0)
-                    {
-                        // check si il faut mettre du blanc ou du orange
-                        picBox.BackColor = (x + y) % 2 == 0 ? Color.White : Color.Orange;
-                    }
-                    else
-                    {
-                        picBox.BackColor = Color.Green;
+                    // check si il faut mettre du blanc ou du orange
+                    picBox.BackColor = (x + y) % 2 == 0 ? Color.White : Color.Orange;
 
-                        // permet de mettre que la case actuelle est true
-                        g_boolTabJoueur[x, y] = true;
-                    }
-
-                    // défini ce qui se passe quand on click dessus
-                    picBox.Click += new EventHandler(InfoCase);
-
-                    // defini ce qui se passe quand on click dessus
-                    picBox.Click += new EventHandler(PositionCavalier);
+                    // premier event handler qui va tout initaliser
+                    picBox.Click += new EventHandler(PosCavalierViaClick);
 
                     // ajoute au panel les picture box
                     panEchiquier.Controls.Add(picBox);
@@ -112,12 +104,6 @@ namespace Echiquier
 
             // défini la bordure
             picBoxCavalier.BorderStyle = BorderStyle.FixedSingle;
-
-            // def de la position d'origine
-            picBoxCavalier.Location = new Point(g_bytePosCavalierCaseX * panEchiquier.Width / g_byteNbrCases, 0);
-
-            // ajoute la picture box au cavalier
-            panEchiquier.Controls.Add(picBoxCavalier);
         }
 
         private void PositionCavalier(object sender, EventArgs e)
@@ -130,7 +116,7 @@ namespace Echiquier
             string[] tab_strStringNamePicBox = CtrlSender.Name.Split(' ');
 
             // permet de changer le nom du picBox en position XY dans le cavalier
-            byte[] tab_bytePosXYViaNom = new byte[] { (byte)((byte)Convert.ToChar(tab_strStringNamePicBox[0]) - 65), Convert.ToByte(tab_strStringNamePicBox[1])};
+            byte[] tab_bytePosXYViaNom = new byte[] { (byte)((byte)Convert.ToChar(tab_strStringNamePicBox[0]) - 65), Convert.ToByte(tab_strStringNamePicBox[1]) };
 
             // check si le joueur a cliqué sur une position valide
             if (CheckPos(CtrlSender.Location.X, CtrlSender.Location.Y))
@@ -253,6 +239,9 @@ namespace Echiquier
             // recall les fonctions, donc permet de refaire aparaitre le cavalier et l'echiquier
             DefPicBoxCavalier();
             Echiquer();
+
+            // montre a l'user ce que il doit faire
+            MessageBox.Show("Appuyez sur une case pour poser votre cavalier !");
         }
 
         private void Initialisation()
@@ -274,24 +263,60 @@ namespace Echiquier
             // initialise l'echiquier
             DefPicBoxCavalier();
             Echiquer();
+
+            // montre a l'user ce que il doit faire
+            MessageBox.Show("Appuyez sur une case pour poser votre cavalier !");
         }
 
         private void btnValiderNbrCases_Click(object sender, EventArgs e)
         {
             // converti le nombre input dans la variable des nbr cases
             g_byteNbrCases = Convert.ToByte(txtBoxInputNbrCases.Text);
-           
+
             // check si nombre entré est entre 4 et 16
             if (g_byteNbrCases >= 4 && g_byteNbrCases <= 16)
-	        {
+            {
                 // initalisation echiquier
                 Initialisation();
-	        }
+            }
             // si non montre message d'erreur
             else
-	        {
+            {
                 MessageBox.Show("Entrez un nombre comprit entre 4 et 16");
-	        }
+            }
+        }
+
+        private void PosCavalierViaClick(object sender, EventArgs e)
+        {
+            // définitions
+            Control CtrlSender = ((Control)sender);
+
+            // set dans le buffer la position du click
+            g_intPosBufferXY[0] = CtrlSender.Location.X;
+            g_intPosBufferXY[1] = CtrlSender.Location.Y;
+
+            // def de la position d'origine
+            picBoxCavalier.Location = new Point(CtrlSender.Location.X, CtrlSender.Location.Y);
+
+            // met la couleur la ou le joueur a cliqué en vert
+            CtrlSender.BackColor = Color.Green;
+
+            // set la location actuelle dans le tableau du joueur en trueM
+            g_boolTabJoueur[CtrlSender.Location.X / CtrlSender.Width, CtrlSender.Location.Y / CtrlSender.Width] = true;
+
+            // ajoute la picture box au cavalier
+            panEchiquier.Controls.Add(picBoxCavalier);
+
+            // permet d'ammener au premier plan le cavalier
+            picBoxCavalier.BringToFront();
+
+            // permet d'ajouter les event handler check pose et de retirer celui utilisé actuellement
+            foreach (PictureBox item in g_ListePicBox)
+            {
+                item.Click += new EventHandler(InfoCase);
+                item.Click += new EventHandler(PositionCavalier);
+                item.Click -= PosCavalierViaClick;
+            }
         }
     }
 }
