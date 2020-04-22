@@ -213,6 +213,7 @@ namespace Echiquier
 
         private bool ChangementBuffer(int intX, int intY)
         {
+            // permet de compacter les lignes de codes qui revenait dans la méthode CheckPos
             g_intPosBufferXY[0] = intX;
             g_intPosBufferXY[1] = intY;
 
