@@ -36,10 +36,8 @@
             this.panInfo = new System.Windows.Forms.Panel();
             this.btnReset = new System.Windows.Forms.Button();
             this.labInfoCases = new System.Windows.Forms.Label();
-            this.picBoxCavalier = new System.Windows.Forms.PictureBox();
             this.panEchiquier.SuspendLayout();
             this.panInfo.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.picBoxCavalier)).BeginInit();
             this.SuspendLayout();
             // 
             // panEchiquier
@@ -113,14 +111,6 @@
             this.labInfoCases.Text = "Case : ?";
             this.labInfoCases.Visible = false;
             // 
-            // picBoxCavalier
-            // 
-            this.picBoxCavalier.Location = new System.Drawing.Point(0, 0);
-            this.picBoxCavalier.Name = "picBoxCavalier";
-            this.picBoxCavalier.Size = new System.Drawing.Size(100, 50);
-            this.picBoxCavalier.TabIndex = 0;
-            this.picBoxCavalier.TabStop = false;
-            // 
             // FrmMaSuperForme
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
@@ -134,7 +124,6 @@
             this.panEchiquier.PerformLayout();
             this.panInfo.ResumeLayout(false);
             this.panInfo.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.picBoxCavalier)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -144,7 +133,6 @@
         private System.Windows.Forms.Panel panEchiquier;
         private System.Windows.Forms.Panel panInfo;
         private System.Windows.Forms.Label labInfoCases;
-        private System.Windows.Forms.PictureBox picBoxCavalier;
         private System.Windows.Forms.Button btnReset;
         private System.Windows.Forms.Label labNbrCases;
         private System.Windows.Forms.TextBox txtBoxInputNbrCases;

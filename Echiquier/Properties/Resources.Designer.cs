@@ -63,9 +63,9 @@ namespace Echiquier.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap cavalier_transp {
+        internal static System.Drawing.Bitmap cav64 {
             get {
-                object obj = ResourceManager.GetObject("cavalier_transp", resourceCulture);
+                object obj = ResourceManager.GetObject("cav64", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
