@@ -58,10 +58,6 @@ namespace Echiquier
                     // premier event handler qui va tout initaliser
                     picBox.Click += new EventHandler(PosCavalierViaClick);
 
-                    picBox.MouseEnter += new EventHandler(ChoixCaseAvecCavalier);
-
-                    picBox.MouseLeave += new EventHandler(Removeg_imageCavalierChoixCase);
-
                     // met l'image par raport a la taille de la picture box
                     picBox.SizeMode = PictureBoxSizeMode.StretchImage;
 
@@ -70,12 +66,10 @@ namespace Echiquier
 
                     // ajoute la picture box au bouton
                     g_ListePicBox.Add(picBox);
-                }
-
+                }           
                 // permet de buffer la position dans le tableau
                 shortBuffer += g_byteNbrCases;
             }
-
             // set la dernière case du tableau en true
             g_boolTabCheckCavalierFini[shortBuffer - 1] = true;
         }
@@ -90,9 +84,9 @@ namespace Echiquier
         {
             // variables
             bool[] tab_boolTabJoueurFlatten;
+            PictureBox CtrlSender = (PictureBox)sender;
 
             // split le nom du picBox dans un tbl de string
-            PictureBox CtrlSender = (PictureBox)sender;
             string[] tab_strStringNamePicBox = CtrlSender.Name.Split(' ');
 
             // permet de changer le nom du picBox en position XY dans le cavalier
@@ -144,7 +138,7 @@ namespace Echiquier
         private bool CheckPos(int intX, int intY, int intWidth)
         {
             // variables
-            int TailleCase = panEchiquier.Width / g_byteNbrCases;
+            int intTailleCase = panEchiquier.Width / g_byteNbrCases;
             int[] tabPosXY = new int[] { intX, intY };
 
             // ici le but est de voir par rapport a la case cliqué si le cavalier se trouve dessus
@@ -152,38 +146,17 @@ namespace Echiquier
             // la condition check par rapport a la case cliqué
             // mon point d'origine est en haut a gauche, donc le 0,0
             // check a chaque fois si le cavalier est dans une position légal
-            if (intX - TailleCase * 1 == g_intTabPosBufferXY[0] && intY + TailleCase * 2 == g_intTabPosBufferXY[1]) //  + 1x // + 2y
+            if (intX - intTailleCase * 1 == g_intTabPosBufferXY[0] && intY + intTailleCase * 2 == g_intTabPosBufferXY[1] ||
+                intX - intTailleCase * 2 == g_intTabPosBufferXY[0] && intY + intTailleCase * 1 == g_intTabPosBufferXY[1] ||
+                intX - intTailleCase * 2 == g_intTabPosBufferXY[0] && intY - intTailleCase * 1 == g_intTabPosBufferXY[1] ||
+                intX - intTailleCase * 1 == g_intTabPosBufferXY[0] && intY - intTailleCase * 2 == g_intTabPosBufferXY[1] ||
+                // fin droite
+                intX + intTailleCase * 1 == g_intTabPosBufferXY[0] && intY - intTailleCase * 2 == g_intTabPosBufferXY[1] ||
+                intX + intTailleCase * 2 == g_intTabPosBufferXY[0] && intY - intTailleCase * 1 == g_intTabPosBufferXY[1] ||
+                intX + intTailleCase * 2 == g_intTabPosBufferXY[0] && intY + intTailleCase * 1 == g_intTabPosBufferXY[1] ||
+                intX + intTailleCase * 1 == g_intTabPosBufferXY[0] && intY + intTailleCase * 2 == g_intTabPosBufferXY[1] )
             {
-                return ChangementBuffer(intX, intY, intWidth);
-            }
-            else if (intX - TailleCase * 2 == g_intTabPosBufferXY[0] && intY + TailleCase * 1 == g_intTabPosBufferXY[1]) //  + 2x // + 1y
-            {
-                return ChangementBuffer(intX, intY, intWidth);
-            }
-            else if (intX - TailleCase * 2 == g_intTabPosBufferXY[0] && intY - TailleCase * 1 == g_intTabPosBufferXY[1]) // + 2x // - 1y
-            {
-                return ChangementBuffer(intX, intY, intWidth);
-            }
-            else if (intX - TailleCase * 1 == g_intTabPosBufferXY[0] && intY - TailleCase * 2 == g_intTabPosBufferXY[1]) // + 1x // - 2y
-            {
-                return ChangementBuffer(intX, intY, intWidth);
-            }
-            // fin droite
-            else if (intX + TailleCase * 1 == g_intTabPosBufferXY[0] && intY - TailleCase * 2 == g_intTabPosBufferXY[1]) // - 1x // - 2y
-            {
-                return ChangementBuffer(intX, intY, intWidth);
-            }
-            else if (intX + TailleCase * 2 == g_intTabPosBufferXY[0] && intY - TailleCase * 1 == g_intTabPosBufferXY[1]) // - 2x // - 1y
-            {
-                return ChangementBuffer(intX, intY, intWidth);
-            }
-            else if (intX + TailleCase * 2 == g_intTabPosBufferXY[0] && intY + TailleCase * 1 == g_intTabPosBufferXY[1]) // -2x + 1y
-            {
-                return ChangementBuffer(intX, intY, intWidth);
-            }
-            else if (intX + TailleCase * 1 == g_intTabPosBufferXY[0] && intY + TailleCase * 2 == g_intTabPosBufferXY[1]) // - 1x + 2y
-            {
-                return ChangementBuffer(intX, intY, intWidth);
+                    return ChangementBuffer(intX, intY, intWidth);
             }
             // si non alors joueur clique sur mauvaise case
             else
@@ -287,22 +260,6 @@ namespace Echiquier
                 item.Click += new EventHandler(InfoCase);
                 item.Click += new EventHandler(PositionCavalier);
                 item.Click -= PosCavalierViaClick;
-            }
-        }
-
-        private void ChoixCaseAvecCavalier(object sender, EventArgs e)
-        {
-            // set l'image du cavalier sur la case que l'user pointe
-            ((PictureBox)sender).Image = g_imageCavalier;
-        }
-
-        private void Removeg_imageCavalierChoixCase(object sender, EventArgs e)
-        {
-            // check si la case ou la souris se trouve n'est pas la case ou le cavalier se trouve
-            if (((PictureBox)sender).Location.X != g_intTabPosBufferXY[0] || ((PictureBox)sender).Location.Y != g_intTabPosBufferXY[1])
-            {
-                // enlève l'image dès que l'user n'a plus la souris sur la case
-                ((PictureBox)sender).Image = null;
             }
         }
     }
