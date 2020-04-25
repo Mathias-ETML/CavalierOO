@@ -207,7 +207,7 @@ namespace Echiquier
             }
 
             // reset des variables
-            g_shortTabPosBufferXY = new short[g_byteNbrCases * g_byteNbrCases];
+            g_shortTabPosBufferXY = new short[2] { -1, -1 };
             g_boolTabJoueur = new bool[g_byteNbrCases, g_byteNbrCases];
             g_boolTabCheckCavalierFini = new bool[g_byteNbrCases * g_byteNbrCases];
             g_ListePicBox.Clear();
