@@ -4,27 +4,101 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using System.Threading;
 using static Echiquier.Variables;
+
 
 namespace Echiquier
 {
     public partial class FrmMaSuperForme : Form
     {
-        // variables globales
+        public FrmMaSuperForme()
+        {
+            InitializeComponent();           
+        }
+     
+        /// <summary>
+        /// permet d'initialiser le second form
+        /// 
+        /// </summary>
+        private void Initialisation()
+        {
+            // initialise l'echiquier dans nouvelle form
+            Thread g_threadSecondForm = new Thread(ThreadSecondForm);
+            g_threadSecondForm.SetApartmentState(ApartmentState.STA);
+            g_threadSecondForm.Start();
+
+            // dispose la forme actuelle
+            this.Dispose();
+        }
+
+        /// <summary>
+        /// check si le nombre entré est compris est valide
+        /// si oui => initialisation
+        /// 
+        /// </summary>
+        /// <param name="sender"> objet bouton </param>
+        /// <param name="e"> event args </param>
+        private void btnValiderNbrCases_Click(object sender, EventArgs e)
+        {
+            // converti le nombre input dans la variable des nbr cases
+            g_byteNbrCases = Convert.ToByte(txtBoxInputNbrCases.Text);
+
+            // check si nombre entré est entre 4 et 16
+            if (g_byteNbrCases >= 4 && g_byteNbrCases <= 16)
+            {
+                // initalisation echiquier
+                Initialisation();
+            }
+            // si non montre message d'erreur
+            else
+            {
+                MessageBox.Show("Entrez un nombre comprit entre 4 et 16");
+            }
+        }
+
+        /// <summary>
+        /// Permet de run l'app sur un nouveau thread
+        /// 
+        /// </summary>
+        private void ThreadSecondForm()
+        {
+            Application.Run(new SecondForm());
+        }
+    }
+
+    public partial class SecondForm : Form
+    {
         private List<PictureBox> g_ListePicBox = new List<PictureBox>();
         private Image g_imageCavalier = new Bitmap(Properties.Resources.cav64);
 
-        public FrmMaSuperForme()
+        /// <summary>
+        /// init la seconde form
+        /// init l'echiquer
+        /// 
+        /// </summary>
+        public SecondForm()
         {
             InitializeComponent();
+
+            Echiquer();
         }
 
+        /// <summary>
+        /// init l'echiquier
+        /// picBox.Click += new EventHandler(PosCavalierViaClick) permet d'init le début du jeu
+        /// si jeu reset, tout est reset en faisant a chaque entrée de methode des nouveaux arrays
+        /// 
+        /// </summary>
         private void Echiquer()
         {
             // (re)inti variables + (re)init tableaux
             short shortBuffer = 0;
             g_boolTabCheckCavalierFini = new bool[g_byteNbrCases * g_byteNbrCases];
             g_boolTabJoueur = new bool[g_byteNbrCases, g_byteNbrCases];
+
+            // montre a l'user ce que il doit faire
+            MessageBox.Show("Appuyez sur une case pour poser votre cavalier !");
 
             for (short y = 0; y < g_byteNbrCases; y++)
             {
@@ -75,7 +149,7 @@ namespace Echiquier
 
                     // ajoute la picture box au bouton
                     g_ListePicBox.Add(picBox);
-                }           
+                }
                 // permet de buffer la position dans le tableau
                 shortBuffer += g_byteNbrCases;
             }
@@ -83,12 +157,37 @@ namespace Echiquier
             g_boolTabCheckCavalierFini[shortBuffer - 1] = true;
         }
 
+        /// <summary>
+        /// montre sur quel case le joueur pointe sa souris
+        /// 
+        /// </summary>
+        /// <param name="sender"> la case ( la picture box ) que le joueur pointe </param>
+        /// <param name="e"> event args </param>
         private void InfoCase(object sender, EventArgs e)
         {
             // défini  le nom du label
             labInfoCases.Text = "Case : " + ((Control)sender).Name.ToString();
         }
 
+        /// <summary>
+        /// reset la case en fonction de l'array g_boolTabJoueur via position XY
+        /// check si la case trigger fait parti des deplacements autorise par le cavalier
+        /// si true => 
+        ///     fait le necessaire pour que cette case soit marque en triggered ( g_boolTabJoueur = true, case colore en vert clair ou fonce )
+        ///     check si le joueur est deja venu sur cet case
+        ///         si true => marque la case en false dans l'array g_boolTabJoueur
+        ///         si false =>
+        ///             fait le necessaire pour deplacer le cavalier et clear la case ou le cavalier etait avant
+        ///             check si le joueur a fini de completer le cavalier
+        ///                 si true => dispose le form
+        ///                 si false => jeu continue
+        /// 
+        /// si false => 
+        ///     deplacement non autorise, pop up pour joueur
+        ///     
+        /// </summary>
+        /// <param name="sender"> la case ( la picture box ) que le joueur a clique dessus </param>
+        /// <param name="e"> event args </param>
         private void PositionCavalier(object sender, EventArgs e)
         {
             // variables
@@ -155,6 +254,26 @@ namespace Echiquier
             }
         }
 
+        /// <summary>
+        /// check si la casque sur laquel le joueur est autorise
+        /// si true => return un true, permet de continuer le if dans lequel il a été call
+        ///     call methode ChangementBuffer
+        ///         retire dans l'ancienne case l'image du cavalier
+        ///         change le buffer XY dans la pos actuelle de la case
+        ///  
+        /// si false => 
+        ///     return false
+        ///     permet de break le if dans lequel il a été call
+        /// 
+        /// </summary>
+        /// <param name="shortX"> input pos axe X sur laquel le joueur a clique </param>
+        /// <param name="shortY"> input pos axe Y sur laquel le joueur a clique </param>
+        /// <param name="shortWidth"> taille de la case sur laquel le joueur a clique </param>
+        /// 
+        /// <returns> 
+        /// true => return un true, permet de continuer le if dans lequel il a été call 
+        /// false => return un false, permet de break le if dans lequel il a été call
+        /// </returns>
         private bool CheckPos(short shortX, short shortY, short shortWidth)
         {
             // variables
@@ -174,9 +293,9 @@ namespace Echiquier
                 shortX + shortTailleCase * 1 == g_shortTabPosBufferXY[0] && shortY - shortTailleCase * 2 == g_shortTabPosBufferXY[1] ||
                 shortX + shortTailleCase * 2 == g_shortTabPosBufferXY[0] && shortY - shortTailleCase * 1 == g_shortTabPosBufferXY[1] ||
                 shortX + shortTailleCase * 2 == g_shortTabPosBufferXY[0] && shortY + shortTailleCase * 1 == g_shortTabPosBufferXY[1] ||
-                shortX + shortTailleCase * 1 == g_shortTabPosBufferXY[0] && shortY + shortTailleCase * 2 == g_shortTabPosBufferXY[1] )
+                shortX + shortTailleCase * 1 == g_shortTabPosBufferXY[0] && shortY + shortTailleCase * 2 == g_shortTabPosBufferXY[1])
             {
-                    return ChangementBuffer(shortX, shortY, shortWidth);
+                return ChangementBuffer(shortX, shortY, shortWidth);
             }
             // si non alors joueur clique sur mauvaise case
             else
@@ -185,6 +304,18 @@ namespace Echiquier
             }
         }
 
+        /// <summary>
+        /// permet d'enlever l'image de l'ancien cavalier avec une petite formule que j'ai mit du temps a faire
+        /// met dans l'array g_shortTabPosBufferXY les pos de shortX et shortY
+        /// 
+        /// </summary>
+        /// <param name="shortX"> input pos axe X sur laquel le joueur a clique via CheckPos </param>
+        /// <param name="shortY"> input pos axe Y sur laquel le joueur a clique via CheckPos </param>
+        /// <param name="shortWidth"> taille de la case sur laquel le joueur a clique via CheckPos </param>
+        /// 
+        /// <returns>
+        /// true => return forcement true vu que la methode a été call
+        /// </returns>
         private bool ChangementBuffer(short shortX, short shortY, short shortWidth)
         {
             // permet d'enlever l'image du cavalier de la case précèdente
@@ -198,64 +329,18 @@ namespace Echiquier
             return true;
         }
 
-        private void btnReset_Click(object sender, EventArgs e)
-        {
-            // fait disparaitre le cavalier en le disposant grace a foreach
-            foreach (PictureBox item in g_ListePicBox)
-            {
-                item.Dispose();
-            }
-
-            // reset des variables
-            g_shortTabPosBufferXY = new short[2] { -1, -1 };
-            g_boolTabJoueur = new bool[g_byteNbrCases, g_byteNbrCases];
-            g_boolTabCheckCavalierFini = new bool[g_byteNbrCases * g_byteNbrCases];
-            g_ListePicBox.Clear();
-
-            // recall les fonctions, donc permet de refaire aparaitre le cavalier et l'echiquier
-            Echiquer();
-
-            // montre a l'user ce que il doit faire
-            MessageBox.Show("Appuyez sur une case pour poser votre cavalier !");
-        }
-
-        private void Initialisation()
-        {           
-            // active la visibilité des informations du cavalier
-            labInfoCases.Visible = true;
-            btnReset.Visible = true;
-            panInfo.Visible = true;
-
-            // desactive la visibilité de demande input nbr cases
-            labNbrCases.Visible = false;
-            txtBoxInputNbrCases.Visible = false;
-            btnValiderNbrCases.Visible = false;
-
-            // initialise l'echiquier
-            Echiquer();
-
-            // montre a l'user ce que il doit faire
-            MessageBox.Show("Appuyez sur une case pour poser votre cavalier !");
-        }
-
-        private void btnValiderNbrCases_Click(object sender, EventArgs e)
-        {
-            // converti le nombre input dans la variable des nbr cases
-            g_byteNbrCases = Convert.ToByte(txtBoxInputNbrCases.Text);
-
-            // check si nombre entré est entre 4 et 16
-            if (g_byteNbrCases >= 4 && g_byteNbrCases <= 16)
-            {
-                // initalisation echiquier
-                Initialisation();
-            }
-            // si non montre message d'erreur
-            else
-            {
-                MessageBox.Show("Entrez un nombre comprit entre 4 et 16");
-            }
-        }
-
+        /// <summary>
+        /// permet d'init le jeu via la premiere case que le joueur a clique dessu
+        /// met dans le array g_shortTabPosBufferXY les pos XY de la case
+        /// met en couleur verte la case sur laquel le joueur a clique et met l'image du cavalier
+        /// met la case sur la quel le joueur a clique en true dans le array g_boolTabJoueur
+        /// boucle foreach =>
+        ///     met la methode PositionCavalier a l'event du click
+        ///     enleve la methode actuelle de l'event du click
+        /// 
+        /// </summary>
+        /// <param name="sender"> la premiere case sur laquel le joueur a clique </param>
+        /// <param name="e"> event args </param>
         private void PosCavalierViaClick(object sender, EventArgs e)
         {
             // définition
@@ -282,6 +367,17 @@ namespace Echiquier
             }
         }
 
+        /// <summary>
+        /// permet de colorer la case que joueur pointe en vert ou en rouge
+        /// si true => sa veut dire que l'user pointe une case valide
+        ///     colore la case en vert clair
+        ///     
+        /// si false => sa veut dire que l'user ne pointe pas une case valide
+        ///     colore la case en rouge
+        /// 
+        /// </summary>
+        /// <param name="sender"> picture box que l'user pointe </param>
+        /// <param name="e"> event args </param>
         private void CheckPosCavalierViaSouris(object sender, EventArgs e)
         {
             // variables
@@ -300,9 +396,9 @@ namespace Echiquier
                 shortX + shortTailleCase * 2 == g_shortTabPosBufferXY[0] && shortY - shortTailleCase * 1 == g_shortTabPosBufferXY[1] ||
                 shortX + shortTailleCase * 2 == g_shortTabPosBufferXY[0] && shortY + shortTailleCase * 1 == g_shortTabPosBufferXY[1] ||
                 shortX + shortTailleCase * 1 == g_shortTabPosBufferXY[0] && shortY + shortTailleCase * 2 == g_shortTabPosBufferXY[1] ||
-                g_shortTabPosBufferXY[0] == -1 || g_shortTabPosBufferXY[1] == -1 )
+                g_shortTabPosBufferXY[0] == -1 || g_shortTabPosBufferXY[1] == -1)
             {
-                CtrlSender.BackColor = Color.LightGreen;       
+                CtrlSender.BackColor = Color.LightGreen;
             }
             else
             {
@@ -310,6 +406,17 @@ namespace Echiquier
             }
         }
 
+        /// <summary>
+        /// permet de reset la case que l'user avait pointé
+        /// si true => sa veut dire que l'user jamais passe par la avec son cavalier
+        ///     met la case avec les couleurs de base grace a une expression conditionnelle
+        ///     
+        /// si false => sa veut dire que user deja passe par la avec son cavalier
+        ///     met la case dans les tons vert grace a une expression conditionnelle
+        /// 
+        /// </summary>
+        /// <param name="sender"> casque que le joueur a leave avec sa souris </param>
+        /// <param name="e"> event args </param>
         private void ResetCaseSourisLeave(object sender, EventArgs e)
         {
             // variables
@@ -325,6 +432,37 @@ namespace Echiquier
             {
                 CtrlSender.BackColor = ((CtrlSender.Location.X / CtrlSender.Width) + (CtrlSender.Location.Y / CtrlSender.Width)) % 2 == 0 ? Color.Green : Color.DarkGreen;
             }
+        }
+
+        /// <summary>
+        /// foreach =>
+        ///     permet de dispose chaque case du cavalier
+        /// 
+        /// reset des variables
+        /// shortTabPosBufferXY remis avec les valuers de bases
+        /// ecrace les valeurs en creant de nouveaux array
+        /// clear la liste des picture box
+        /// recall la methode Echiquer
+        /// 
+        /// </summary>
+        /// <param name="sender"> bouton reset, pas utilise ici </param>
+        /// <param name="e"> event args </param>
+        private void btnReset_Click(object sender, EventArgs e)
+        {
+            // fait disparaitre le cavalier en le disposant grace a foreach
+            foreach (PictureBox item in g_ListePicBox)
+            {
+                item.Dispose();
+            }
+
+            // reset des variables
+            g_shortTabPosBufferXY = new short[2] { -1, -1 };
+            g_boolTabJoueur = new bool[g_byteNbrCases, g_byteNbrCases];
+            g_boolTabCheckCavalierFini = new bool[g_byteNbrCases * g_byteNbrCases];
+            g_ListePicBox.Clear();
+
+            // recall les fonctions, donc permet de refaire aparaitre le cavalier et l'echiquier
+            Echiquer();
         }
     }
 }

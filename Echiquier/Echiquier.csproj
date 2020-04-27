@@ -84,5 +84,8 @@
   <ItemGroup>
     <None Include="Resources\cav64.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\cav64ico.ico" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

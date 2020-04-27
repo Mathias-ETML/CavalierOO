@@ -69,5 +69,15 @@ namespace Echiquier.Properties {
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Icon semblable à (Icône).
+        /// </summary>
+        internal static System.Drawing.Icon cav64ico {
+            get {
+                object obj = ResourceManager.GetObject("cav64ico", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
     }
 }
