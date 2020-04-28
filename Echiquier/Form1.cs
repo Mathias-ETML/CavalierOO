@@ -34,26 +34,36 @@ namespace Echiquier
 
         /// <summary>
         /// check si le nombre entré est compris est valide
-        /// si oui => initialisation
+        /// si true => check si entre 4 et 16
+        ///     si true => initialisation
+        ///     si false => msg erreur
+        /// si false => msg erreur
         /// 
         /// </summary>
         /// <param name="sender"> objet bouton </param>
         /// <param name="e"> event args </param>
         private void btnValiderNbrCases_Click(object sender, EventArgs e)
         {
-            // converti le nombre input dans la variable des nbr cases
-            g_byteNbrCases = Convert.ToByte(txtBoxInputNbrCases.Text);
-
-            // check si nombre entré est entre 4 et 16
-            if (g_byteNbrCases >= 4 && g_byteNbrCases <= 16)
+            // check si un nombre est entré, si true converti le nombre input dans la variable des nbr cases
+            if (System.Byte.TryParse(txtBoxInputNbrCases.Text, out g_byteNbrCases))
             {
-                // initalisation echiquier
-                Initialisation();
+                // check si nombre entré est entre 4 et 16
+                if (g_byteNbrCases >= 4 && g_byteNbrCases <= 16)
+                {
+                    // initalisation echiquier
+                    Initialisation();
+                }
+                // si non montre message d'erreur
+                else
+                {
+                    MessageBox.Show("Entrez un nombre comprit entre 4 et 16");
+                }
             }
-            // si non montre message d'erreur
+            // affiche msg erreur et empty le text box
             else
             {
-                MessageBox.Show("Entrez un nombre comprit entre 4 et 16");
+                MessageBox.Show("Entrez un nombre");
+                txtBoxInputNbrCases.Text = "";
             }
         }
 
