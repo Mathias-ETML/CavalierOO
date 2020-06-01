@@ -45,7 +45,7 @@ namespace Echiquier
         private void btnValiderNbrCases_Click(object sender, EventArgs e)
         {
             // check si un nombre est entré, si true converti le nombre input dans la variable des nbr cases
-            if (System.Byte.TryParse(txtBoxInputNbrCases.Text, out g_byteNbrCases))
+            if (byte.TryParse(txtBoxInputNbrCases.Text, out g_byteNbrCases))
             {
                 // check si nombre entré est entre 4 et 16
                 if (g_byteNbrCases >= 4 && g_byteNbrCases <= 16)
@@ -290,20 +290,8 @@ namespace Echiquier
             short shortTailleCase = (short)(panEchiquier.Width / g_byteNbrCases);
             short[] tabPosXY = new short[] { shortX, shortY };
 
-            // ici le but est de voir par rapport a la case cliqué si le cavalier se trouve dessus
-            // les commentaires montre ou le joueur doit cliquer pour que la condition soit true
-            // la condition check par rapport a la case cliqué
-            // mon point d'origine est en haut a gauche, donc le 0,0
-            // check a chaque fois si le cavalier est dans une position légal
-            if (shortX - shortTailleCase * 1 == g_shortTabPosBufferXY[0] && shortY + shortTailleCase * 2 == g_shortTabPosBufferXY[1] ||
-                shortX - shortTailleCase * 2 == g_shortTabPosBufferXY[0] && shortY + shortTailleCase * 1 == g_shortTabPosBufferXY[1] ||
-                shortX - shortTailleCase * 2 == g_shortTabPosBufferXY[0] && shortY - shortTailleCase * 1 == g_shortTabPosBufferXY[1] ||
-                shortX - shortTailleCase * 1 == g_shortTabPosBufferXY[0] && shortY - shortTailleCase * 2 == g_shortTabPosBufferXY[1] ||
-                // fin droite
-                shortX + shortTailleCase * 1 == g_shortTabPosBufferXY[0] && shortY - shortTailleCase * 2 == g_shortTabPosBufferXY[1] ||
-                shortX + shortTailleCase * 2 == g_shortTabPosBufferXY[0] && shortY - shortTailleCase * 1 == g_shortTabPosBufferXY[1] ||
-                shortX + shortTailleCase * 2 == g_shortTabPosBufferXY[0] && shortY + shortTailleCase * 1 == g_shortTabPosBufferXY[1] ||
-                shortX + shortTailleCase * 1 == g_shortTabPosBufferXY[0] && shortY + shortTailleCase * 2 == g_shortTabPosBufferXY[1])
+            // check si deplacement legal
+            if (CheckPosDeplacementCavalier(shortX, shortY, shortWidth))
             {
                 return ChangementBuffer(shortX, shortY, shortWidth);
             }
@@ -312,6 +300,32 @@ namespace Echiquier
             {
                 return false;
             }
+        }
+
+        /// <summary>
+        /// permet de check si l'user a fait un deplacement autorise avec son cavalier
+        /// 
+        /// </summary>
+        /// <param name="shortX"> input pos axe X sur laquel le joueur a clique </param>
+        /// <param name="shortY"> input pos axe Y sur laquel le joueur a clique </param>
+        /// <param name="shortTailleCase"> taille de la case sur laquel le joueur a clique </param>
+        /// <returns></returns>
+        private bool CheckPosDeplacementCavalier(short shortX, short shortY, short shortTailleCase)
+        {
+            // ici le but est de voir par rapport a la case cliqué si le cavalier se trouve dessus
+            // les commentaires montre ou le joueur doit cliquer pour que la condition soit true
+            // la condition check par rapport a la case cliqué
+            // mon point d'origine est en haut a gauche, donc le 0,0
+            // check a chaque fois si le cavalier est dans une position légal
+            return shortX - shortTailleCase * 1 == g_shortTabPosBufferXY[0] && shortY + shortTailleCase * 2 == g_shortTabPosBufferXY[1] ||
+                   shortX - shortTailleCase * 2 == g_shortTabPosBufferXY[0] && shortY + shortTailleCase * 1 == g_shortTabPosBufferXY[1] ||
+                   shortX - shortTailleCase * 2 == g_shortTabPosBufferXY[0] && shortY - shortTailleCase * 1 == g_shortTabPosBufferXY[1] ||
+                   shortX - shortTailleCase * 1 == g_shortTabPosBufferXY[0] && shortY - shortTailleCase * 2 == g_shortTabPosBufferXY[1] ||
+                   // fin droite
+                   shortX + shortTailleCase * 1 == g_shortTabPosBufferXY[0] && shortY - shortTailleCase * 2 == g_shortTabPosBufferXY[1] ||
+                   shortX + shortTailleCase * 2 == g_shortTabPosBufferXY[0] && shortY - shortTailleCase * 1 == g_shortTabPosBufferXY[1] ||
+                   shortX + shortTailleCase * 2 == g_shortTabPosBufferXY[0] && shortY + shortTailleCase * 1 == g_shortTabPosBufferXY[1] ||
+                   shortX + shortTailleCase * 1 == g_shortTabPosBufferXY[0] && shortY + shortTailleCase * 2 == g_shortTabPosBufferXY[1];
         }
 
         /// <summary>
@@ -397,16 +411,7 @@ namespace Echiquier
             short shortTailleCase = (short)CtrlSender.Width;
 
             // check si la souris est sur une position légal du cavalier, si true la met en vert clair \|/ si false la met en rouge
-            if (shortX - shortTailleCase * 1 == g_shortTabPosBufferXY[0] && shortY + shortTailleCase * 2 == g_shortTabPosBufferXY[1] ||
-                shortX - shortTailleCase * 2 == g_shortTabPosBufferXY[0] && shortY + shortTailleCase * 1 == g_shortTabPosBufferXY[1] ||
-                shortX - shortTailleCase * 2 == g_shortTabPosBufferXY[0] && shortY - shortTailleCase * 1 == g_shortTabPosBufferXY[1] ||
-                shortX - shortTailleCase * 1 == g_shortTabPosBufferXY[0] && shortY - shortTailleCase * 2 == g_shortTabPosBufferXY[1] ||
-                // fin droite
-                shortX + shortTailleCase * 1 == g_shortTabPosBufferXY[0] && shortY - shortTailleCase * 2 == g_shortTabPosBufferXY[1] ||
-                shortX + shortTailleCase * 2 == g_shortTabPosBufferXY[0] && shortY - shortTailleCase * 1 == g_shortTabPosBufferXY[1] ||
-                shortX + shortTailleCase * 2 == g_shortTabPosBufferXY[0] && shortY + shortTailleCase * 1 == g_shortTabPosBufferXY[1] ||
-                shortX + shortTailleCase * 1 == g_shortTabPosBufferXY[0] && shortY + shortTailleCase * 2 == g_shortTabPosBufferXY[1] ||
-                g_shortTabPosBufferXY[0] == -1 || g_shortTabPosBufferXY[1] == -1)
+            if (CheckPosDeplacementCavalier(shortX, shortY, shortTailleCase) || g_shortTabPosBufferXY[0] == -1 || g_shortTabPosBufferXY[1] == -1)
             {
                 CtrlSender.BackColor = Color.LightGreen;
             }
